@@ -1,9 +1,13 @@
 {
   "name": "JavaScript",
+  "type": "module",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "node 10_dez/main.js"
+    "start": "node main.js"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.1"
   }
 }
