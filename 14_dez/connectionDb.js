@@ -1,5 +1,4 @@
 import MC from "mongodb";
-import OI from "mongodb";
 import env from "dotenv";
 
 function connectionMongo() {
