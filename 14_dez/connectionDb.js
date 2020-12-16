@@ -2,13 +2,12 @@ import MC from "mongodb";
 import env from "dotenv";
 
 function connectionMongo() {
-  console.log("teste");
   env.config();
 
   // DB config
   const { MongoClient } = MC;
 
-  global.connection = MongoClient.connect(
+  MongoClient.connect(
     process.env.DB_CONNECTION,
     { useNewUrlParser: true, useUnifiedTopology: true },
     (err, client) => {
