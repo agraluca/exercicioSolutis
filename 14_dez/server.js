@@ -1,5 +1,4 @@
 import express from "express";
-import bodyparser from "body-parser";
 import cors from "cors";
 import MC from "mongodb";
 import OI from "mongodb";
@@ -15,7 +14,8 @@ const app = express();
 app.set("view engine", "ejs");
 
 // Middleweres
-app.use(bodyparser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 // DB config
@@ -30,7 +30,7 @@ MongoClient.connect(
   }
 );
 
-// Routes
+// Routes User
 
 app.get("/", (req, res) => {
   res.render("index.ejs");
@@ -98,6 +98,77 @@ app.route("/delete/:id").get((req, res) => {
     if (err) return res.send(500, err);
     console.log("Deletado do Banco de Dados!");
     res.redirect("/show");
+  });
+});
+
+// Routes Produtos
+
+app.get("/product", (req, res) => {
+  res.render("index_product.ejs");
+});
+
+app.post("/show_product", (req, res) => {
+  db.collection("product").insertOne(req.body, (err, result) => {
+    if (err) return console.log(err);
+
+    console.log("Salvo no Banco de Dados");
+    res.redirect("/show_product");
+  });
+});
+
+app.get("/product", (req, res) => {
+  var cursor = db.collection("product").find();
+});
+
+app.get("/show_product", (req, res) => {
+  db.collection("product")
+    .find()
+    .toArray((err, results) => {
+      if (err) return console.log(err);
+      res.render("show_product.ejs", { data: results });
+    });
+});
+
+app
+  .route("/edit_product/:id")
+  .get((req, res) => {
+    var id = req.params.id;
+
+    db.collection("product")
+      .find(ObjectId(id))
+      .toArray((err, result) => {
+        if (err) return res.send(err);
+        res.render("edit_product.ejs", { data: result });
+      });
+  })
+  .post((req, res) => {
+    var id = req.params.id;
+    var product = req.body.product;
+    var price = req.body.price;
+
+    db.collection("product").updateOne(
+      { _id: ObjectId(id) },
+      {
+        $set: {
+          product,
+          price,
+        },
+      },
+      (err, result) => {
+        if (err) return res.send(err);
+        res.redirect("/show_product");
+        console.log("Atualizado no Banco de Dados");
+      }
+    );
+  });
+
+app.route("/delete_product/:id").get((req, res) => {
+  var id = req.params.id;
+
+  db.collection("product").deleteOne({ _id: ObjectId(id) }, (err, result) => {
+    if (err) return res.send(500, err);
+    console.log("Deletado do Banco de Dados!");
+    res.redirect("/show_product");
   });
 });
 
